@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import App from "./components/App";
 import produce from "immer";
 
-type Props = {};
+type Props = {
+  children: JSX.Element | JSX.Element[];
+};
 
 export type Bucket = {
   id: number;
@@ -10,14 +12,31 @@ export type Bucket = {
   done: boolean;
 };
 
+export type BucketListContextValueType = {
+  state: { bucketList: Bucket[]; filterStatus: string };
+  actions: {
+    addBucket: (task: string) => void;
+    deleteBucket: (id: number) => void;
+    editBucket: (id: number, task: string) => void;
+    toggleDone: (id: number) => void;
+    changeFilterStatus: (filter: string) => void;
+    filterBucketList: () => Bucket[];
+  };
+};
+
+const BucketContext = React.createContext<BucketListContextValueType | null>(
+  null
+);
+
 // 간단한 버킷리스트 App
-const AppContainer = (props: Props) => {
+export const BucketProvider = ({ children }: Props) => {
   const [bucketList, setBucketList] = useState<Bucket[]>([
     { id: 1, task: "스카이다이빙", done: false },
     { id: 2, task: "월드컵 결승 직관", done: false },
     { id: 3, task: "유럽여행", done: true },
     { id: 4, task: "100억 모으기", done: false },
   ]);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
 
   const addBucket = (task: string) => {
     const newList: Bucket[] = produce(bucketList, (draft) => {
@@ -50,8 +69,12 @@ const AppContainer = (props: Props) => {
     setBucketList(newList);
   };
 
-  const filterBucketList = (filter: string, bucketList: Bucket[]) => {
-    switch (filter) {
+  const changeFilterStatus = (filter: string) => {
+    setFilterStatus(filter);
+  };
+
+  const filterBucketList = () => {
+    switch (filterStatus) {
       case "done":
         return bucketList.filter((item) => item.done);
       case "not-done":
@@ -61,16 +84,21 @@ const AppContainer = (props: Props) => {
     }
   };
 
+  const values: BucketListContextValueType = {
+    state: { bucketList, filterStatus },
+    actions: {
+      addBucket,
+      deleteBucket,
+      editBucket,
+      toggleDone,
+      changeFilterStatus,
+      filterBucketList,
+    },
+  };
+
   return (
-    <App
-      bucketList={bucketList}
-      addBucket={addBucket}
-      deleteBucket={deleteBucket}
-      editBucket={editBucket}
-      toggleDone={toggleDone}
-      filterBucketList={filterBucketList}
-    />
+    <BucketContext.Provider value={values}>{children}</BucketContext.Provider>
   );
 };
 
-export default AppContainer;
+export default BucketContext;

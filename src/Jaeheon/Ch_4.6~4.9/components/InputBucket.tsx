@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
+import BucketContext from "../BucketContext";
 
-type InputBucketProps = {
-  addBucket: (task: string) => void;
-};
-
-const InputBucket = ({ addBucket }: InputBucketProps) => {
+const InputBucket = () => {
+  const value = useContext(BucketContext);
   const [inputValue, setInputValue] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -18,7 +16,7 @@ const InputBucket = ({ addBucket }: InputBucketProps) => {
       inputRef.current?.focus();
       return;
     }
-    addBucket(inputValue.trim());
+    value?.actions.addBucket(inputValue.trim());
     setInputValue("");
   };
 

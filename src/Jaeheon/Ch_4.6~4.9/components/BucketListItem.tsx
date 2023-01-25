@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Bucket } from "../AppContainer";
+import { Bucket } from "../BucketContext";
 
 type BucketListItemProps = {
   bucketItem: Bucket;

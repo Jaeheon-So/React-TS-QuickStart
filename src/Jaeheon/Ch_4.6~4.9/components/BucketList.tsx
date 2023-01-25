@@ -1,32 +1,17 @@
-import React from "react";
-import { Bucket } from "../AppContainer";
+import React, { useContext } from "react";
+import BucketContext from "../BucketContext";
 import BucketListItem from "./BucketListItem";
 
-type BucketListProps = {
-  bucketList: Bucket[];
-  filterStatus: string;
-  deleteBucket: (id: number) => void;
-  editBucket: (id: number, task: string) => void;
-  toggleDone: (id: number) => void;
-  filterBucketList: (filter: string, bucketList: Bucket[]) => Bucket[];
-};
-
-const BucketList = ({
-  bucketList,
-  filterStatus,
-  deleteBucket,
-  editBucket,
-  toggleDone,
-  filterBucketList,
-}: BucketListProps) => {
-  const buckets = filterBucketList(filterStatus, bucketList).map((item) => {
+const BucketList = () => {
+  const value = useContext(BucketContext);
+  const buckets = value?.actions.filterBucketList().map((item) => {
     return (
       <BucketListItem
         key={item.id}
         bucketItem={item}
-        deleteBucket={deleteBucket}
-        editBucket={editBucket}
-        toggleDone={toggleDone}
+        deleteBucket={value.actions.deleteBucket}
+        editBucket={value.actions.editBucket}
+        toggleDone={value.actions.toggleDone}
       />
     );
   });
